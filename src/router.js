@@ -4,6 +4,7 @@ const userMiddleware = require('./middlewares/userMiddleware');
 
 const router = express.Router();
 
+router.post('/user', userMiddleware.authUser, userController.getUser);
 router.get('/users', userMiddleware.authUser, userController.getAll);
 router.post('/users', userMiddleware.validateUser, userController.createUser);
 router.get('/login', userController.login);

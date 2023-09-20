@@ -19,6 +19,10 @@ const createUser = async (req, res) => {
   return res.status(201).json(response);
 };
 
+const getUser = async (req, res) => {
+  return res.status(201).json(req.user);
+};
+
 const authenticate = async (req, res) => {
   // Verificando email e senha se estão preenchidos
   if (req.body.email == undefined || req.body.password == undefined) {
@@ -93,4 +97,5 @@ module.exports = {
   authenticate,
   login,
   deleteUser,
+  getUser
 };

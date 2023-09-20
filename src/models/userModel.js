@@ -7,6 +7,8 @@ const getAll = async () => {
   return users[0];
 };
 
+
+
 const createUser = async (user) => {
   const { username, email, name, password } = user;
   let response = 'Email já cadastrado';
