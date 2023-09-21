@@ -26,7 +26,7 @@ const getUser = async (req, res) => {
 const authenticate = async (req, res) => {
   // Verificando email e senha se estão preenchidos
   if (req.body.email == undefined || req.body.password == undefined) {
-    return res.json({ message: 'preencha os campos!' });
+    return res.status(403).json({ message: 'preencha os campos!' });
   } else {
     const { email, password } = req.body;
     // Procurando o email cadastrado
@@ -43,6 +43,7 @@ const authenticate = async (req, res) => {
         // Gerando token de acesso
         const acessToken = jwt.sign(
           {
+            id: idusers,
             username: username,
             role: role,
             name: name,

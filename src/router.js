@@ -1,9 +1,14 @@
 const express = require('express');
+// User
 const userController = require('./controllers/userController');
 const userMiddleware = require('./middlewares/userMiddleware');
+// Workers
+const workersController = require('./controllers/workersController');
+const workersMiddleware = require('./middlewares/workersMiddleware');
 
 const router = express.Router();
 
+// Users!
 router.post('/user', userMiddleware.authUser, userController.getUser);
 router.get('/users', userMiddleware.authUser, userController.getAll);
 router.post('/users', userMiddleware.validateUser, userController.createUser);
@@ -14,5 +19,19 @@ router.delete(
   userController.deleteUser,
 );
 router.post('/authenticate', userController.authenticate);
+
+// Workers!
+router.post(
+  '/workers',
+  userMiddleware.authUser,
+  workersMiddleware.auth,
+  workersController.createWorker,
+);
+router.get(
+  '/workers',
+  userMiddleware.authUser,
+  workersMiddleware.auth,
+  workersController.getWorkers,
+);
 
 module.exports = router;
