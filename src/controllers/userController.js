@@ -59,12 +59,12 @@ const authenticate = async (req, res) => {
           acessToken: acessToken,
         });
       } else {
-        return res.status(400).json({
+        return res.status(403).json({
           message: 'Email ou senha incorretos!',
         });
       }
     } else {
-      return res.status(400).json({
+      return res.status(403).json({
         message: 'Email não cadastrado',
       });
     }
@@ -97,5 +97,5 @@ module.exports = {
   authenticate,
   login,
   deleteUser,
-  getUser
+  getUser,
 };

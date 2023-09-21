@@ -47,11 +47,11 @@ const validateUser = async (req, res, next) => {
   }
   // Se o email já existe no banco de dados
   if (emails.includes(body.email)) {
-    return res.status(400).json({ message: 'Este email já foi cadastrado' });
+    return res.status(403).json({ message: 'Este email já foi cadastrado' });
   }
   // Se o username já existe no banco de dados
   if (usernames.includes(body.username)) {
-    return res.status(400).json({ message: 'Este username já foi cadastrado' });
+    return res.status(403).json({ message: 'Este username já foi cadastrado' });
   }
 
   // Validar email por regex
@@ -59,18 +59,18 @@ const validateUser = async (req, res, next) => {
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
   if (!body.email.match(emailRegex)) {
-    return res.status(400).json({ message: 'Email inválido!' });
+    return res.status(403).json({ message: 'Email inválido!' });
   }
   // Validar username por regex
   var usernameRegex = /^[a-zA-Z\-]+$/;
   if (!body.username.match(usernameRegex)) {
-    return res.status(400).json({ message: 'Username inválido!' });
+    return res.status(403).json({ message: 'Username inválido!' });
   }
 
-  // Validar username por regex
+  // Validar name por regex
   const regexNome = /^[\p{L}\s]+$/u;
   if (!body.name.match(regexNome)) {
-    return res.status(400).json({ message: 'Nome inválido!' });
+    return res.status(403).json({ message: 'Nome inválido!' });
   }
 
   // Validando senha por regex
@@ -95,6 +95,7 @@ const authUser = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (authHeader) {
     const token = authHeader.split(' ')[1];
+
     jwt.verify(token, 'tcc', (err, user) => {
       if (err) {
         return res.status(403).json('O token não é válido!');
