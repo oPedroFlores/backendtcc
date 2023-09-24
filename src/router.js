@@ -5,6 +5,8 @@ const userMiddleware = require('./middlewares/userMiddleware');
 // Workers
 const workersController = require('./controllers/workersController');
 const workersMiddleware = require('./middlewares/workersMiddleware');
+// Services
+const servicesController = require('./controllers/servicesController');
 
 const router = express.Router();
 
@@ -32,6 +34,32 @@ router.get(
   userMiddleware.authUser,
   workersMiddleware.auth,
   workersController.getWorkers,
+);
+router.delete(
+  '/workers',
+  userMiddleware.authUser,
+  workersMiddleware.auth,
+  workersController.deleteWorker,
+);
+
+// Services
+router.post(
+  '/services',
+  userMiddleware.authUser,
+  workersMiddleware.auth,
+  servicesController.createService,
+);
+router.get(
+  '/services',
+  userMiddleware.authUser,
+  workersMiddleware.auth,
+  servicesController.getServices,
+);
+router.delete(
+  '/services',
+  userMiddleware.authUser,
+  workersMiddleware.auth,
+  servicesController.deleteService,
 );
 
 module.exports = router;

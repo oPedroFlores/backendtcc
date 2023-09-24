@@ -13,7 +13,14 @@ const createWorker = async (name, clientId) => {
   return createdWorker;
 };
 
+const deleteWorker = async (id) => {
+  const query = "DELETE FROM workers WHERE id = '" + id + "'";
+  const response = await connection.execute(query);
+  return response;
+};
+
 module.exports = {
   getWorkers,
   createWorker,
+  deleteWorker,
 };
