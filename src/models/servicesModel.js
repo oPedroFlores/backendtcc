@@ -25,8 +25,17 @@ const deleteService = async (id) => {
   return response;
 };
 
+const updateService = async (id, name, price, desc) => {
+  const query = `UPDATE services
+  SET name = '${name}', price = '${price}', description = '${desc}'
+  WHERE id = ${id};`;
+  const response = await connection.execute(query);
+  return response;
+};
+
 module.exports = {
   createService,
   getServices,
   deleteService,
+  updateService,
 };

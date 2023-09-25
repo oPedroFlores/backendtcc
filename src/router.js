@@ -62,4 +62,11 @@ router.delete(
   servicesController.deleteService,
 );
 
+router.put(
+  '/services',
+  userMiddleware.authUser,
+  workersMiddleware.auth,
+  servicesController.updateService,
+);
+
 module.exports = router;
