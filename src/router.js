@@ -41,6 +41,12 @@ router.delete(
   workersMiddleware.auth,
   workersController.deleteWorker,
 );
+router.put(
+  '/workers',
+  userMiddleware.authUser,
+  workersMiddleware.auth,
+  workersController.updateWorker,
+);
 
 // Services
 router.post(

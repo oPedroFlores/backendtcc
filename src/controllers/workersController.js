@@ -16,10 +16,20 @@ const createWorker = async (req, res) => {
 };
 
 const getWorkers = async (req, res) => {
-  const id = req.user.id;
-  const workers = await workersModel.getWorkers(id);
+  try {
+    const id = req.user.id;
+    let workers = await workersModel.getWorkers(id);
+    for (const worker of workers) {
+      const [services] = await workersModel.getWorkerServices(worker.id);
 
-  return res.status(200).json(workers);
+      worker.services = services; // Adiciona a chave "services" ao funcionário
+    }
+
+    return res.status(200).json(workers);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Erro ao buscar os trabalhadores' });
+  }
 };
 
 const deleteWorker = async (req, res) => {
@@ -45,8 +55,44 @@ const deleteWorker = async (req, res) => {
   return res.status(202).json({ message: 'Funcionário deletado com sucesso!' });
 };
 
+const updateWorker = async (req, res) => {
+  const name = req.body.name;
+  const services = req.body.services;
+  const workerid = req.body.id;
+  if (!workerid) {
+    return res.status(403).json({ message: 'Preencha todos os campos!' });
+  }
+  // verificando se o worker solicitado para alteração é deste cliente
+  const workers = await workersModel.getWorkers(req.user.id);
+  let idEncontrado = false;
+  for (const worker of workers) {
+    if (Number(worker.id) === Number(workerid)) {
+      if (worker.clientid === req.user.id) {
+        idEncontrado = true;
+        break; // Podemos sair do loop assim que encontrarmos uma correspondência
+      }
+    }
+  }
+  if (!idEncontrado) {
+    return res.status(403).json({
+      message: 'Você não tem permissão para alterar este funcionário!',
+    });
+  }
+  if (!name) {
+    return res.status(403).json({ message: 'Preencha os campos!' });
+  }
+  const updatedWorker = await workersModel.updateWorker(
+    workerid,
+    name,
+    services,
+  );
+
+  return res.json(updatedWorker);
+};
+
 module.exports = {
   createWorker,
   getWorkers,
   deleteWorker,
+  updateWorker,
 };

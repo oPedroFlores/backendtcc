@@ -19,8 +19,45 @@ const deleteWorker = async (id) => {
   return response;
 };
 
+const getWorkerServices = async (id) => {
+  const query = 'SELECT * FROM workerservices WHERE workerid = ?';
+  const response = await connection.execute(query, [id]);
+  return response;
+};
+
+const updateWorkerServices = async (workerid, services) => {
+  // Deletando os atuais services deste worker
+  const [isServices] = await getWorkerServices(workerid);
+  if (isServices.length > 0) {
+    const query =
+      "DELETE FROM workerservices WHERE workerid = '" + workerid + "'";
+    const response = await connection.execute(query);
+  }
+
+  for (const service of services) {
+    const query =
+      'INSERT INTO workerservices(workerid, serviceid) VALUES (?, ?)';
+    const response = await connection.execute(query, [
+      workerid,
+      service.serviceID,
+    ]);
+  }
+  return;
+};
+
+const updateWorker = async (workerid, name, services) => {
+  const query = `UPDATE workers
+  SET name = '${name}'
+  WHERE id = ${workerid};`;
+  const response2 = updateWorkerServices(workerid, services);
+  const response = await connection.execute(query);
+  return response;
+};
+
 module.exports = {
   getWorkers,
   createWorker,
   deleteWorker,
+  getWorkerServices,
+  updateWorker,
 };
