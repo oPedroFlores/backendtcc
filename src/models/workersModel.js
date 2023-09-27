@@ -1,4 +1,6 @@
 const connection = require('./connection');
+const servicesModel = require('../models/servicesModel');
+const { response } = require('express');
 
 const getWorkers = async (id) => {
   const query = 'SELECT * FROM workers WHERE clientid = ?';
@@ -36,10 +38,13 @@ const updateWorkerServices = async (workerid, services) => {
 
   for (const service of services) {
     const query =
-      'INSERT INTO workerservices(workerid, serviceid) VALUES (?, ?)';
+      'INSERT INTO workerservices(workerid, serviceid, serviceName) VALUES (?, ?, ?)';
+    const [name] = await servicesModel.getServiceName(service.serviceID);
+    const stringName = name[0]['name'];
     const response = await connection.execute(query, [
       workerid,
       service.serviceID,
+      stringName,
     ]);
   }
   return;

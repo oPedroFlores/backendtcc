@@ -87,7 +87,7 @@ const updateWorker = async (req, res) => {
     services,
   );
 
-  return res.json(updatedWorker);
+  return res.status(202).json(updatedWorker);
 };
 
 module.exports = {

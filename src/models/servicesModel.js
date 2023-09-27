@@ -19,6 +19,12 @@ const getServices = async (id) => {
   return services[0];
 };
 
+const getServiceName = async (id) => {
+  const query = 'SELECT name FROM services WHERE id = ?';
+  const service = await connection.execute(query, [id]);
+  return service;
+};
+
 const deleteService = async (id) => {
   const query = "DELETE FROM services WHERE id = '" + id + "'";
   const response = await connection.execute(query);
@@ -38,4 +44,5 @@ module.exports = {
   getServices,
   deleteService,
   updateService,
+  getServiceName,
 };
