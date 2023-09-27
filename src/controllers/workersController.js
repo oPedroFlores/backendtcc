@@ -1,4 +1,5 @@
 const workersModel = require('../models/workersModel');
+const servicesModel = require('../models/servicesModel');
 
 const createWorker = async (req, res) => {
   // Se o nome é vazio
@@ -67,10 +68,8 @@ const updateWorker = async (req, res) => {
   let idEncontrado = false;
   for (const worker of workers) {
     if (Number(worker.id) === Number(workerid)) {
-      if (worker.clientid === req.user.id) {
-        idEncontrado = true;
-        break; // Podemos sair do loop assim que encontrarmos uma correspondência
-      }
+      idEncontrado = true;
+      break; // Podemos sair do loop assim que encontrarmos uma correspondência
     }
   }
   if (!idEncontrado) {
@@ -90,9 +89,46 @@ const updateWorker = async (req, res) => {
   return res.status(202).json(updatedWorker);
 };
 
+const workerServices = async (req, res) => {
+  // verificando se o worker solicitado para alteração é deste cliente
+  const workers = await workersModel.getWorkers(req.user.id);
+  let idEncontrado = false;
+  for (const worker of workers) {
+    if (Number(worker.id) === Number(req.body.workerId)) {
+      idEncontrado = true;
+      break; // Podemos sair do loop assim que encontrarmos uma correspondência
+    }
+  }
+  if (!idEncontrado) return res.status(403).json('Sem permissão!');
+
+  // Pegando todos os serviços deste cliente
+  const clientId = req.user.id;
+  const allServices = await servicesModel.getServices(clientId);
+  // Pegando todos os serviços deste funcionário
+  const workerId = req.body.workerId;
+  const [workerServices] = await workersModel.getWorkerServices(workerId);
+
+  const updatedAllServices = allServices.map((service) => {
+    // Verifique se o serviço com o mesmo id existe em workerServices
+    const existsInWorkerServices = workerServices.some(
+      (workerService) => workerService.serviceID === service.id,
+    );
+
+    // Adicione a propriedade "added" com base na verificação
+    return {
+      ...service,
+      added: existsInWorkerServices ? 'true' : 'false',
+    };
+  });
+
+  // Agora, updatedAllServices conterá os serviços com a propriedade "added" atualizada
+  return res.json(updatedAllServices);
+};
+
 module.exports = {
   createWorker,
   getWorkers,
   deleteWorker,
   updateWorker,
+  workerServices,
 };

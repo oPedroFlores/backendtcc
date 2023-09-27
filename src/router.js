@@ -47,6 +47,12 @@ router.put(
   workersMiddleware.auth,
   workersController.updateWorker,
 );
+router.post(
+  '/workerservices',
+  userMiddleware.authUser,
+  workersMiddleware.auth,
+  workersController.workerServices,
+);
 
 // Services
 router.post(
