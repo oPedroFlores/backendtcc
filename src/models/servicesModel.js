@@ -27,7 +27,9 @@ const getServiceName = async (id) => {
 
 const deleteService = async (id) => {
   const query = "DELETE FROM services WHERE id = '" + id + "'";
-  const response = await connection.execute(query);
+  const query2 = "DELETE FROM workerservices WHERE serviceID = '" + id + "'";
+  const response = await connection.execute(query2);
+  const response2 = await connection.execute(query);
   return response;
 };
 
