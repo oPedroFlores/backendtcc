@@ -10,7 +10,6 @@ const servicesController = require('./controllers/servicesController');
 // Calendar
 const calendarController = require('./controllers/calendarController');
 
-
 const router = express.Router();
 
 // Users!
@@ -90,6 +89,13 @@ router.get(
   userMiddleware.authUser,
   workersMiddleware.auth,
   calendarController.getCalendar,
-)
+);
+
+router.post(
+  '/calendar',
+  userMiddleware.authUser,
+  workersMiddleware.auth,
+  calendarController.postCalendar,
+);
 
 module.exports = router;
