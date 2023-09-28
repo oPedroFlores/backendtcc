@@ -7,6 +7,9 @@ const workersController = require('./controllers/workersController');
 const workersMiddleware = require('./middlewares/workersMiddleware');
 // Services
 const servicesController = require('./controllers/servicesController');
+// Calendar
+const calendarController = require('./controllers/calendarController');
+
 
 const router = express.Router();
 
@@ -80,5 +83,13 @@ router.put(
   workersMiddleware.auth,
   servicesController.updateService,
 );
+
+// Calendar
+router.get(
+  '/calendar',
+  userMiddleware.authUser,
+  workersMiddleware.auth,
+  calendarController.getCalendar,
+)
 
 module.exports = router;
