@@ -19,6 +19,18 @@ const getServices = async (id) => {
   return services[0];
 };
 
+const getServicesByUsername = async (username) => {
+  const [clientidString] = await connection.execute(
+    'SELECT idusers FROM users WHERE username = ?',
+    [username],
+  );
+  const id = clientidString[0].idusers;
+  const query = 'SELECT * FROM services WHERE clientid = ?';
+  const services = await connection.execute(query, [id]);
+
+  return services[0];
+};
+
 const getServiceName = async (id) => {
   const query = 'SELECT name FROM services WHERE id = ?';
   const service = await connection.execute(query, [id]);
@@ -47,4 +59,5 @@ module.exports = {
   deleteService,
   updateService,
   getServiceName,
+  getServicesByUsername,
 };

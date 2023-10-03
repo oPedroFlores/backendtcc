@@ -9,6 +9,19 @@ const getWorkers = async (id) => {
   return workers[0];
 };
 
+const getWorkersByUsername = async (username) => {
+  const [clientidString] = await connection.execute(
+    'SELECT idusers FROM users WHERE username = ?',
+    [username],
+  );
+  const id = clientidString[0].idusers;
+
+  const query = 'SELECT * FROM workers WHERE clientid = ?';
+  const workers = await connection.execute(query, [id]);
+
+  return workers[0];
+};
+
 const createWorker = async (name, clientId) => {
   const query = 'INSERT INTO workers(name, clientid) VALUES (?, ?)';
   const [createdWorker] = await connection.execute(query, [name, clientId]);
@@ -67,4 +80,5 @@ module.exports = {
   deleteWorker,
   getWorkerServices,
   updateWorker,
+  getWorkersByUsername,
 };

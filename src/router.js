@@ -101,8 +101,19 @@ router.post(
 );
 
 // Schedule
-router.get('/schedule/worker', scheduleController.getWorkers);
+router.post('/schedule/workers', scheduleController.getWorkers);
 
-router.get('/schedule/services', scheduleController.getServices);
+router.post('/schedule/services', scheduleController.getServices);
+
+router.post(
+  '/schedule/get/schedules',
+  scheduleController.getSchedulesByUsername,
+);
+
+router.post(
+  '/schedule/set/schedule',
+  userMiddleware.authUser,
+  scheduleController.setSchedules,
+);
 
 module.exports = router;
