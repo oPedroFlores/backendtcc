@@ -46,6 +46,18 @@ const setSchedule = async (
   );
   const id = clientidString[0].idusers;
 
+  // Verificar se já existe este horário para este worker
+  const workerQuery =
+    'SELECT * FROM schedules WHERE workerId = ? AND (startTimeStamp = ? OR endTimeStamp = ?) ';
+  const [allWorkerSchedules] = await connection.execute(workerQuery, [
+    workerId,
+    startTimeStamp,
+    endTimeStamp,
+  ]);
+  if (allWorkerSchedules.length > 0) {
+    return 'Erro. Horário Inválido!';
+  }
+
   const query =
     'INSERT INTO schedules(clientId, userId, startTimeStamp, endTimeStamp, workerId, serviceId) VALUES (?, ?, ?, ?, ?, ?)';
   const response = await connection.execute(query, [
@@ -60,7 +72,45 @@ const setSchedule = async (
   return response;
 };
 
+const getSchedule = async (timestamp, worker) => {
+  // Pegando agenda
+  const [schedule] = await connection.execute(
+    'SELECT * FROM schedules WHERE workerId = ? AND startTimeStamp = ?',
+    [worker, timestamp],
+  );
+  if (schedule.length === 0 || schedule.length > 1) {
+    return 'Erro na pesquisa!';
+  }
+
+  const userId = schedule[0].userId;
+  // Pegando informações do usuário cliente final
+  const [info] = await connection.execute(
+    'SELECT * FROM users WHERE idusers = ?',
+    [userId],
+  );
+  if (info.length === 0) {
+    return 'Erro na pesquisa!';
+  }
+
+  // Pegando nome do serviço
+
+  const serviceId = schedule[0].serviceId;
+  const [serviceName] = await connection.execute(
+    'SELECT name FROM services WHERE id = ?',
+    [serviceId],
+  );
+
+  const response = {
+    service: serviceName[0].name,
+    user: info[0].name,
+    email: info[0].email,
+  };
+
+  return response;
+};
+
 module.exports = {
   getSchedulesByUsername,
   setSchedule,
+  getSchedule,
 };

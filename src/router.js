@@ -116,4 +116,11 @@ router.post(
   scheduleController.setSchedules,
 );
 
+router.post(
+  '/schedule/info',
+  userMiddleware.authUser,
+  workersMiddleware.auth,
+  scheduleController.infoSchedule,
+);
+
 module.exports = router;

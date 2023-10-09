@@ -79,8 +79,25 @@ const setSchedules = async (req, res) => {
     startTimeStamp,
     endTimeStamp,
   );
+  return res.status(201).json(response);
+};
 
-  return res.status(200).json(response);
+const infoSchedule = async (req, res) => {
+  const worker = req.body.worker;
+  const timestamp = req.body.timestamp;
+  const user = req.user.id;
+
+  if (!worker || !timestamp || !user) {
+    return res.status(403).json({ message: 'Preencha todos os campos!' });
+  }
+
+  const schedule = await scheduleModel.getSchedule(timestamp, worker);
+
+  if (schedule.length === 0) {
+    return res.status(500).json(schedule);
+  }
+
+  return res.status(200).json(schedule);
 };
 
 module.exports = {
@@ -88,4 +105,5 @@ module.exports = {
   getServices,
   getSchedulesByUsername,
   setSchedules,
+  infoSchedule,
 };
