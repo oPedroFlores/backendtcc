@@ -38,6 +38,10 @@ const getServices = async (req, res) => {
 };
 
 const getSchedulesByUsername = async (req, res) => {
+  const username = req.body.username;
+  const date = req.body.date;
+  const schedules = await scheduleModel.getSchedulesByUsername(username, date);
+  return res.json(schedules);
   try {
     const username = req.body.username;
     const date = req.body.date;

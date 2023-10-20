@@ -7,7 +7,6 @@ const getSchedulesByUsername = async (username, date) => {
   const dia = partes[2];
   const timeStampDate = Date.UTC(ano, mes - 1, dia);
   const EndtimeStampDate = Date.UTC(ano, mes - 1, Number(dia) + 1);
-
   const [clientidString] = await connection.execute(
     'SELECT idusers FROM users WHERE username = ?',
     [username],
@@ -18,9 +17,9 @@ const getSchedulesByUsername = async (username, date) => {
     'SELECT * FROM calendar WHERE clientID = ?',
     [id],
   );
-
+  // 'SELECT * FROM schedules WHERE clientId = ? AND startTimeStamp >= ? AND endTimeStamp <= ?',
   const [schedules] = await connection.execute(
-    'SELECT * FROM schedules WHERE clientId = ? AND startTimeStamp >= ? AND endTimeStamp <= ?',
+    'SELECT sch.*, ws.workerID as workerId, ws.serviceID as serviceId, w.clientid as clientId FROM schedules sch JOIN workerservices ws ON sch.workerServiceId = ws.id JOIN workers w ON ws.workerID = w.id WHERE w.clientid = ? AND sch.startTimeStamp >= ? AND sch.endTimeStamp <= ?;',
     [id, timeStampDate, EndtimeStampDate],
   );
 
@@ -48,7 +47,7 @@ const setSchedule = async (
 
   // Verificar se já existe este horário para este worker
   const workerQuery =
-    'SELECT * FROM schedules WHERE workerId = ? AND (startTimeStamp = ? OR endTimeStamp = ?) ';
+    'SELECT * FROM schedules WHERE workerServiceId IN (SELECT id FROM workerservices WHERE workerID = ? AND (startTimeStamp = ? OR endTimeStamp = ?));';
   const [allWorkerSchedules] = await connection.execute(workerQuery, [
     workerId,
     startTimeStamp,
@@ -58,15 +57,16 @@ const setSchedule = async (
     return 'Erro. Horário Inválido!';
   }
 
+  const wsQuery =
+    'SELECT id from workerservices WHERE workerID = ? AND serviceID = ?';
+  const [wsId] = await connection.execute(wsQuery, [workerId, serviceId]);
   const query =
-    'INSERT INTO schedules(clientId, userId, startTimeStamp, endTimeStamp, workerId, serviceId) VALUES (?, ?, ?, ?, ?, ?)';
+    'INSERT INTO schedules(userId, startTimeStamp, endTimeStamp, workerServiceId) VALUES (?, ?, ?, ?)';
   const response = await connection.execute(query, [
-    id,
     userId,
     startTimeStamp,
     endTimeStamp,
-    workerId,
-    serviceId,
+    wsId[0].id,
   ]);
 
   return response;
@@ -75,7 +75,7 @@ const setSchedule = async (
 const getSchedule = async (timestamp, worker) => {
   // Pegando agenda
   const [schedule] = await connection.execute(
-    'SELECT * FROM schedules WHERE workerId = ? AND startTimeStamp = ?',
+    'SELECT * FROM schedules WHERE workerServiceId IN (SELECT id FROM workerservices WHERE workerID = ?) AND startTimeStamp = ?; ',
     [worker, timestamp],
   );
   if (schedule.length === 0 || schedule.length > 1) {
@@ -93,8 +93,12 @@ const getSchedule = async (timestamp, worker) => {
   }
 
   // Pegando nome do serviço
+  let [serviceId] = await connection.execute(
+    'SELECT serviceID FROM workerservices WHERE id = ?;',
+    [schedule[0].workerServiceId],
+  );
+  serviceId = serviceId[0].serviceID;
 
-  const serviceId = schedule[0].serviceId;
   const [serviceName] = await connection.execute(
     'SELECT name FROM services WHERE id = ?',
     [serviceId],
