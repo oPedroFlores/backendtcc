@@ -104,10 +104,23 @@ const infoSchedule = async (req, res) => {
   return res.status(200).json(schedule);
 };
 
+const scheduleUser = async (req, res) => {
+  const user = req.user;
+  const schedules = await scheduleModel.getUserSchedules(user);
+  if (schedules.length > 0) {
+    return res.status(200).json(schedules);
+  } else {
+    return res
+      .status(404)
+      .json({ message: 'Não existem agendamentos para este usuário' });
+  }
+};
+
 module.exports = {
   getWorkers,
   getServices,
   getSchedulesByUsername,
   setSchedules,
   infoSchedule,
+  scheduleUser,
 };

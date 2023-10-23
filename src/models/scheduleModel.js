@@ -113,8 +113,18 @@ const getSchedule = async (timestamp, worker) => {
   return response;
 };
 
+const getUserSchedules = async (user) => {
+  const userId = user.id;
+  const [schedules] = await connection.execute(
+    'SELECT s.userId, ws.id AS workerServiceId, w.name AS workerName, ser.name AS serviceName, u.username AS clientUsername, s.startTimeStamp, s.endTimeStamp FROM schedules s JOIN workerservices ws ON s.workerServiceId = ws.id JOIN workers w ON ws.workerID = w.id JOIN services ser ON ws.serviceID = ser.id JOIN users u ON w.clientid = u.idusers WHERE s.userId = ?',
+    [userId],
+  );
+  return schedules;
+};
+
 module.exports = {
   getSchedulesByUsername,
   setSchedule,
   getSchedule,
+  getUserSchedules,
 };

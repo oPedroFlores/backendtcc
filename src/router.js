@@ -123,4 +123,10 @@ router.post(
   scheduleController.infoSchedule,
 );
 
+router.get(
+  '/schedule/user',
+  userMiddleware.authUser,
+  scheduleController.scheduleUser,
+);
+
 module.exports = router;
