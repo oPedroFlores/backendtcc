@@ -57,6 +57,12 @@ router.post(
   workersMiddleware.auth,
   workersController.workerServices,
 );
+router.get(
+  '/workers/info',
+  userMiddleware.authUser,
+  workersMiddleware.auth,
+  workersController.workersInfo,
+);
 
 // Services
 router.post(
@@ -83,6 +89,13 @@ router.put(
   userMiddleware.authUser,
   workersMiddleware.auth,
   servicesController.updateService,
+);
+
+router.get(
+  '/services/info',
+  userMiddleware.authUser,
+  workersMiddleware.auth,
+  servicesController.servicesInfo,
 );
 
 // Calendar

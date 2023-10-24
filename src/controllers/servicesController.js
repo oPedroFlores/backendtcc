@@ -121,9 +121,15 @@ const updateService = async (req, res) => {
   return res.status(200).json(updatedService);
 };
 
+const servicesInfo = async (req, res) => {
+  const info = await servicesModel.servicesInfo(req.user);
+  return res.json(info);
+};
+
 module.exports = {
   createService,
   getServices,
   deleteService,
   updateService,
+  servicesInfo,
 };

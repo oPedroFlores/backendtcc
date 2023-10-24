@@ -30,7 +30,9 @@ const createWorker = async (name, clientId) => {
 
 const deleteWorker = async (id) => {
   const query = "DELETE FROM workers WHERE id = '" + id + "'";
+  const query2 = "DELETE FROM workerservices WHERE workerID = '" + id + "'";
   const response = await connection.execute(query);
+  const response2 = await connection.execute(query);
   return response;
 };
 
@@ -52,13 +54,12 @@ const updateWorkerServices = async (workerid, services) => {
   for (const service of services[0]) {
     if (service.added === 'true') {
       const query =
-        'INSERT INTO workerservices(workerid, serviceid, serviceName) VALUES (?, ?, ?)';
+        'INSERT INTO workerservices(workerid, serviceid) VALUES (?, ?)';
       const [name] = await servicesModel.getServiceName(service.serviceID);
       const stringName = name[0]['name'];
       const response = await connection.execute(query, [
         workerid,
         service.serviceID,
-        stringName,
       ]);
     }
   }
@@ -74,6 +75,14 @@ const updateWorker = async (workerid, name, services) => {
   return response;
 };
 
+const workersInfo = async (user) => {
+  const clientId = user.id;
+  const query =
+    'SELECT w.id AS id, w.name AS name, COUNT(s.id) AS numberOfRegistrations FROM users u JOIN workers w ON u.idusers = w.clientid LEFT JOIN services se ON u.idusers = se.clientid LEFT JOIN workerservices ws ON w.id = ws.workerID AND se.id = ws.serviceID LEFT JOIN schedules s ON ws.id = s.workerServiceId WHERE u.idusers = ? GROUP BY w.id, w.name ';
+  const [response] = await connection.execute(query, [clientId]);
+  return response;
+};
+
 module.exports = {
   getWorkers,
   createWorker,
@@ -81,4 +90,5 @@ module.exports = {
   getWorkerServices,
   updateWorker,
   getWorkersByUsername,
+  workersInfo,
 };

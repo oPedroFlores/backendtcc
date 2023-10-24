@@ -53,6 +53,14 @@ const updateService = async (id, name, price, desc) => {
   return response;
 };
 
+const servicesInfo = async (user) => {
+  const clientId = user.id;
+  const query =
+    'SELECT se.id AS id, se.name AS name, COUNT(s.id) AS numberOfRegistrations FROM users u JOIN services se ON u.idusers = se.clientid LEFT JOIN workerservices ws ON se.id = ws.serviceID LEFT JOIN schedules s ON ws.id = s.workerServiceId WHERE u.idusers = ? GROUP BY se.id, se.name';
+  const [response] = await connection.execute(query, [clientId]);
+  return response;
+};
+
 module.exports = {
   createService,
   getServices,
@@ -60,4 +68,5 @@ module.exports = {
   updateService,
   getServiceName,
   getServicesByUsername,
+  servicesInfo,
 };

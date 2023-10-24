@@ -125,10 +125,16 @@ const workerServices = async (req, res) => {
   return res.json(updatedAllServices);
 };
 
+const workersInfo = async (req, res) => {
+  const info = await workersModel.workersInfo(req.user);
+  return res.json(info);
+};
+
 module.exports = {
   createWorker,
   getWorkers,
   deleteWorker,
   updateWorker,
   workerServices,
+  workersInfo,
 };
