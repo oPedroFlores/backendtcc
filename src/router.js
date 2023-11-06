@@ -142,4 +142,10 @@ router.get(
   scheduleController.scheduleUser,
 );
 
+router.delete(
+  '/schedule/delete',
+  userMiddleware.authUser,
+  scheduleController.scheduleDelete,
+);
+
 module.exports = router;

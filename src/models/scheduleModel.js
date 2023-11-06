@@ -122,9 +122,28 @@ const getUserSchedules = async (user) => {
   return schedules;
 };
 
+const scheduleDelete = async (req, user) => {
+  const startTimeStamp = Number(req.startTimeStamp);
+  const endTimeStamp = Number(req.endTimeStamp);
+  const workerServiceId = Number(req.workerServiceId);
+
+  const query =
+    'DELETE FROM schedules WHERE userId = ? AND startTimeStamp = ? AND endTimeStamp = ? AND workerServiceId = ?';
+
+  const [deleted] = await connection.execute(query, [
+    user,
+    startTimeStamp,
+    endTimeStamp,
+    workerServiceId,
+  ]);
+
+  return deleted;
+};
+
 module.exports = {
   getSchedulesByUsername,
   setSchedule,
   getSchedule,
   getUserSchedules,
+  scheduleDelete,
 };

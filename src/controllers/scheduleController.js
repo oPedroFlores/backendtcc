@@ -116,6 +116,13 @@ const scheduleUser = async (req, res) => {
   }
 };
 
+const scheduleDelete = async (req, res) => {
+  const user = req.user.id;
+
+  const response = await scheduleModel.scheduleDelete(req.body, user);
+  return res.status(200).json(response);
+};
+
 module.exports = {
   getWorkers,
   getServices,
@@ -123,4 +130,5 @@ module.exports = {
   setSchedules,
   infoSchedule,
   scheduleUser,
+  scheduleDelete,
 };
